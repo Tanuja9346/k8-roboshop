@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mongodb
+  namespace: roboshop
   labels: # these labels belong to deployment
     app: mongodb
     tier: db
@@ -24,17 +25,19 @@ spec:
       - name: mongodb
         image: joindevops1/mongodb:1.0.0
 ---
-  apiVersion: v1                ## cluster-ip not exposed to outside world.purely for interanal.
-  kind: Service
-  metadata:
-    name: mongodb
-  spec:
-    selector:
-      app: mongodb
-      tier: db
-      project: roboshop
-    ports:
-    - name: mongodb-port
-      protocol: TCP
-      port: 27017 # this port belongs to service
-      targetPort: 27017 # this port belongs to container      
+apiVersion: v1                ## cluster-ip not exposed to outside world.purely for interanal.
+kind: Service
+metadata:
+  name: mongodb
+  namespace: roboshop
+spec:
+  selector:
+    app: mongodb
+    tier: db
+    project: roboshop
+  ports:
+  - name: mongodb-port
+    protocol: TCP
+    port: 27017 # this port belongs to service
+    targetPort: 27017 # this port belongs to container      
+---
