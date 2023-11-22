@@ -27,14 +27,14 @@ spec:
   apiVersion: v1                ## cluster-ip not exposed to outside world.purely for interanal.
   kind: Service
   metadata:
-  name: mongodb
+    name: mongodb
   spec:
-  selector:
-    app: mongodb
-    tier: db
-    project: roboshop
-  ports:
-  - name: mongodb-port
-    protocol: TCP
-    port: 27017 # this port belongs to service
-    targetPort: 27017 # this port belongs to container      
+    selector:
+      app: mongodb
+      tier: db
+      project: roboshop
+    ports:
+    - name: mongodb-port
+      protocol: TCP
+      port: 27017 # this port belongs to service
+      targetPort: 27017 # this port belongs to container      
