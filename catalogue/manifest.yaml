@@ -23,33 +23,59 @@ spec:
     spec:
       containers:
       - name: catalogue
-        image: joindevops1/catalogue:1.0.0
+        image: joindevops/catalogue:1.0.0
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "68Mi"
+          limits:
+            cpu: "100m"
+            memory: "128Mi"
         envFrom:
-        - configMapRef:    # refering below declarerd configuration.
+        - configMapRef:
             name: catalogue
-
 ---
-  apiVersion: v1                ## cluster-ip not exposed to outside world.purely for interanal.
-  kind: Service
-  metadata:
-    name: catalogue
-    namespace: roboshop
-  spec:
-    selector:
-      app: catalogue
-      tier: db
-      project: roboshop
-    ports:
-    - name: mongodb-port
-      protocol: TCP
-      port: 8080 # this port belongs to service
-      targetPort: 8080 # this port belongs to container      
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalogue
+  namespace: roboshop
+spec:
+  selector:
+    app: catalogue
+    tier: app
+    project: roboshop
+  ports:
+  - name: mongodb-port
+    protocol: TCP
+    port: 8080 # this port belongs to service
+    targetPort: 8080 # this port belongs to container
 ---
-apiVersion: v1    ## giving configuration to catalogue and mongodb.
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: catalogue
+  namespace: roboshop
 data:
-  MONGO: "true"  # keep in double quotes.
-  MONGO_URL: "mongodb://mongodb:27107/catalogue"  # protocal//service-name:service:port/schema
-  
+  MONGO: "true" # keep true in double quotes
+  MONGO_URL: "mongodb://mongodb:27017/catalogue" # protocol//service-name:service-port/schema
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: catalogue
+  namespace: roboshop
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: catalogue
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 75
