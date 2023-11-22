@@ -24,18 +24,11 @@ spec:
       containers:
       - name: catalogue
         image: joindevops1/catalogue:1.0.0
-        resources:
-          requests:
-            cpu: "50m"
-            memory: "68Mi"
-          limits:
-            cpu: "100m"
-            memory: "128Mi"
-        envFrom:
+        envfrom:      # configuration refer here.
         - configMapRef:
             name: catalogue
 ---
-apiVersion: v1
+apiVersion: v1    ## not expose to outside only in inside.
 kind: Service
 metadata:
   name: catalogue
@@ -59,23 +52,4 @@ metadata:
 data:
   MONGO: "true" # keep true in double quotes
   MONGO_URL: "mongodb://mongodb:27017/catalogue" # protocol//service-name:service-port/schema
----
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: catalogue
-  namespace: roboshop
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: catalogue
-  minReplicas: 1
-  maxReplicas: 10
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 75
+
