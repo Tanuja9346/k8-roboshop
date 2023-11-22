@@ -51,6 +51,6 @@ metadata:
   name: catalogue
   namespace: roboshop
 data:
-  MONGODB: "true"  # keep in double quotes.
+  MONGO: "true"  # keep in double quotes.
   MONGO_URL: "mongodb://mongodb:27107/catalogue"  # protocal//service-name:service:port/schema
   
